@@ -188,18 +188,6 @@ def parse_btn_distance(value, safe_numeric=True):
         # Any unexpected string → treat as very poor performance
         return CAP_DISTANCE
 
-def fill_nan_with_column_mean(df: pd.DataFrame) -> pd.DataFrame:
-    # Fill NaNs in all numeric columns with their column mean, or 0 if mean is NaN
-
-    numeric_cols = df.select_dtypes(include="number").columns
-    if len(numeric_cols) == 0:
-        return df
-    # Normalize infinities before computing means
-    df.loc[:, numeric_cols] = df[numeric_cols].replace([np.inf, -np.inf], np.nan)
-    # Use .loc to avoid SettingWithCopyWarning
-    means = df[numeric_cols].mean()
-    df.loc[:, numeric_cols] = df[numeric_cols].fillna(means.fillna(0))
-    return df
 
 def calculate_trap_weight_factor(trap_number_today, trap_number):
     weight = np.exp(-abs(trap_number_today - trap_number))
@@ -345,6 +333,22 @@ def compute_n_averages_stats(dog_infos, n=5, trap_weighted=True):
 #################################
 
 ##### cleaning dog info data #####
+## CLEANING FUNCTION####
+
+def fill_nan_with_column_mean(df: pd.DataFrame) -> pd.DataFrame:
+    # Fill NaNs in all numeric columns with their column mean, or 0 if mean is NaN
+
+    numeric_cols = df.select_dtypes(include="number").columns
+    if len(numeric_cols) == 0:
+        return df
+    # Normalize infinities before computing means
+    df.loc[:, numeric_cols] = df[numeric_cols].replace([np.inf, -np.inf], np.nan)
+    # Use .loc to avoid SettingWithCopyWarning
+    means = df[numeric_cols].mean()
+    df.loc[:, numeric_cols] = df[numeric_cols].fillna(means.fillna(0))
+    return df
+#######################
+
 
 def fill_missing_sec_times_mlp(mlp,X_scaler,y_scaler,dog_infos):
     processed_columns = ["SP","resultPosition","resultBtnDistance","relativeBetweenDistance",
