@@ -37,6 +37,23 @@ def process_SP(sp_value):
         return float(numerator) / float(denominator)
     else:
         return float(cleaned)
+    
+def get_SP_num_denom(sp_value):
+    if pd.isnull(sp_value):
+        return np.nan
+
+    # Keep only digits, slash, and dot (ignore trailing letters)
+    cleaned = re.match(r"[\d./]+", str(sp_value))
+    if not cleaned:
+        return np.nan
+
+    cleaned = cleaned.group()
+
+    if "/" in cleaned:
+        numerator, denominator = cleaned.split("/")
+        return float(numerator), float(denominator)
+    else:
+        return float(cleaned), 1.0
 
 def log_odds_from_fractional(numerator, denominator):
     """

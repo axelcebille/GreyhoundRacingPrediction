@@ -4,10 +4,10 @@ from pathlib import Path
 import re
 import math
 import joblib
-from utils import is_valid_csv
-from features.process_features import calculate_dog_age
-from dataset.load import load_race_infos, load_dog_infos, fetch_dog_past_races
-from features.process_race_header import preprocess_pipeline_race_header
+from src.utils import is_valid_csv
+from src.features.process_features import calculate_dog_age
+from src.dataset.load import load_race_infos, load_dog_infos, fetch_dog_past_races
+from src.features.process_race_header import preprocess_pipeline_race_header
 
 #shuffle_type = "trap", "random"
 def preprocess_pipeline_race_info(race_header, race_infos, shuffle_type="trap"):
