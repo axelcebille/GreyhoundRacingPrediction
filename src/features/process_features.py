@@ -215,3 +215,31 @@ def score_result_comment(comment: str, remark_score: dict) -> float:
             score += remark_score[token]
 
     return score
+
+def time_since_last_race(dog_infos):
+    dog_infos["raceDate"] = pd.to_datetime(dog_infos["raceDate"])
+    
+    dog_infos = dog_infos.sort_values(["dogId", "raceDate"])
+    
+    dog_infos["daysSinceLastRace"] = (
+        dog_infos.groupby("dogId")["raceDate"]
+        .transform(lambda x: x.diff().dt.days)
+    )
+    
+    return dog_infos
+
+def early_pos_race_dog(dog_infos):
+    def rank_sectional(sec_times):
+        sec_times_clean = np.where(np.isnan(sec_times), np.inf, sec_times)
+        order = np.argsort(sec_times_clean)
+        positions = np.empty_like(order)
+        positions[order] = np.arange(1, len(sec_times_clean) + 1)
+        return positions
+
+    dog_infos["earlyPosition"] = (
+        dog_infos.groupby("raceId")["resultSectionalTime"]
+        .transform(rank_sectional)
+    )
+    dog_infos["deltaEarlyFinalPosition"] = (
+        dog_infos["earlyPosition"] - dog_infos["resultPosition"]
+    )
